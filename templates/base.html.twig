@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}CFSMA{% endblock %}</title>
+        <link rel="icon" type="image/png" href="{{ asset('build/assets/images/image0.png') }}">
+        {% block stylesheets %}
+            {{ vite_entry_link_tags('app') }}
+        {% endblock %}
+
+        {% block javascripts %}
+            {{ vite_entry_script_tags('app') }}
+        {% endblock %}
+    </head>
+    <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-dark">
+        <div class="container-fluid">
+            <a class="w-5" href="{{ path('matiere') }}">
+                <div class="logoSites"></div>
+            </a>
+            <a class="navbar-brand text-white" href="{{ path('matiere') }}">Projet VESUNNA</a>
+
+            <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item dropdown">
+                        {% if is_granted('ROLE_FORMATEUR') or is_granted('ROLE_CHEF') or is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPERADMIN') %}
+                            <a class="nav-link dropdown-toggle text-light" data-bs-toggle="dropdown">Administration</a>
+                            <ul class="dropdown-menu bg-dark">
+                                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPERADMIN') %}
+                                    <li>
+                                        <a class="dropdown-item text-light" href="{{ path('admin_app_register') }}">Gestion Utilisateurs</a>
+                                    </li>
+                                {% endif %}
+                                <li>
+                                    <a class="dropdown-item text-light" href="#">Gestion Régiment &raquo;</a>
+                                    <ul class="submenu">
+                                        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPERADMIN') %}
+                                            <li>
+                                                <a class="dropdown-item text-light" href="{{ path('app_compagnie') }}">Ajouter Compagnie</a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item text-light" href="{{ path('app_section') }}">Ajouter Section</a>
+                                            </li>
+                                        {% endif %}
+                                        {% if is_granted('ROLE_CHEF') or is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPERADMIN') %}
+                                            <li>
+                                                <a class="dropdown-item text-light" href="{{ path('app_filiere') }}">Ajouter Filière</a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item text-light" href="{{ path('admin_app_formateur') }}">Ajouter Formateur</a>
+                                            </li>
+                                        {% endif %}
+                                        <li>
+                                            <a class="dropdown-item text-light" href="{{ path('admin_app_stagiaires') }}">Ajouter Stagiaire</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item text-light" href="{{ path('app_cohorte') }}">Ajouter Cohorte</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item text-light" href="{{ path('app_matiere') }}">Ajouter Matière</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item text-light" href="{{ path('app_cour') }}">Ajouter Cours</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item text-light" href="{{ path('app_matiere_public') }}">Ajouter Matière Public</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item text-light" href="{{ path('app_cour_public') }}">Ajouter Cours Public</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        {% endif %}
+                    </li>
+                </ul>
+                {% if app.user %}
+                    <a class="nav-link mx-4 text-light" href="{{ path('public') }}">Public</a>
+                    <a class="nav-link text-light" href="{{ path('app_logout') }}">Déconnexion</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main class="mx-5 my-4">
+        {% block main %}{% endblock %}
+    </main>
+
+    <footer class="footer1 container-fluid bg-dark text-center text-white">
+        <div class="container p-2 pb-0">
+            <section>
+                <div class="col-md-auto">
+                    <div class="logo"></div>
+                </div>
+                <div class="text-center">
+                    <p>Cours des stagiaires du CFSMA, made with some ❤️ and ☕.</p>
+                </div>
+            </section>
+        </div>
+
+        <div class="text-center p-1">
+            <a class="btn btn-footer text-white" target="_blank" href="https://symfony.com/">Powered with Symfony</a>
+            <a class="btn btn-footer text-white" href="{{ path('app_about') }}">Documentation</a>
+        </div>
+    </footer>
+        {% block body %}{% endblock %}
+    </body>
+</html>

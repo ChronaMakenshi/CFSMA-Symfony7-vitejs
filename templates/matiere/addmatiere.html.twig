@@ -1,0 +1,62 @@
+{% extends "base.html.twig" %}
+{% block main %}
+{% if app.user %}
+	<section class="d-flex flex-lg-row flex-column justify-content-lg-between">
+		{{ form_start(formMatiere) }}
+		<div class="p-5">
+			<h2 class="text-center">
+				{% if EditMode %}
+					Modifier une Matière
+				{% else %}
+					Ajouter une Matière
+				{% endif %}
+			</h2>
+			{% for message in app.flashes('danger') %}
+				<div class="alert alert-danger">
+					{{ message }}
+				</div>
+			{% endfor %}
+			<label for="exampleFormControlInput1" class="form-label">Nom de la Matière:</label>
+			{{ form_row(formMatiere.name)}}
+			<div class="d-flex justify-content-around mt-4">
+				<button type="submit" class="btn btn-primary btn-outline-success text-white">
+					{% if EditMode %}
+						Modifier
+					{% else %}
+						Enregistrer
+					{% endif %}
+				</button>
+				<a href="/addmatiere/" class="btn btn-primary btn-outline-danger text-white">Annuler</a>
+			</div>
+		</div>
+		{{ form_end(formMatiere) }}
+		<div class="p-5 w-75">
+			<table id="datatable" class="table table-bordered border border-3  w-100">
+				<thead>
+					<tr>
+						<th class="bg-danger" scope="col">Matière</th>
+						<th class="bg-danger" scope="col">Modifier/Supprimé</th>
+					</tr>
+				</thead>
+				<tbody class="table-dark">
+					{% for matiere in matieres %}
+						<tr>
+							<td>{{ matiere.name }}</td>
+							<td>
+								<a class="text-decoration-none text-hover-success" href="/addmatiere/{{ matiere.id }}">Modifier</a>
+								/
+								<a class="text-decoration-none text-hover-danger" href="/addmatiere/delete/{{ matiere.id }}" onclick="return confirm('Supprimer ?')">Supprimer</a>
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</section>
+	{% else %}
+		<div class="my-6">
+			<h1>Vous devez vous connecté</h1>
+			<a class="btn btn-primary" href="{{ path('app_logout') }}">Retour sur la page de connexion</a>
+		</div>
+	{% endif %}
+{% endblock %}

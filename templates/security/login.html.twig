@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html class="html">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{% block title %}Bienvenue au CFSMA!{% endblock %}</title>
+	{% block stylesheets %}
+		{{ vite_entry_link_tags('app') }}
+	{% endblock %}
+	{% block javascripts %}
+		{{ vite_entry_script_tags('app') }}
+	{% endblock %}
+	<link rel="icon" type="image/png" href="{{ asset('build/assets/images/image0.png') }}">
+</head>
+	<body class="fond main">
+		<h1 class="text-white display-1 fw-bolder">PROJET VESUNNA</h1>
+		<div class="container-fluid d-flex justify-content-center">
+			<main>
+				<div class="bg-opacity-dark p-2 rounded-3 border border-2 mt-3 col-12">
+					<form method="post">
+						{% if error %}
+							<div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+						{% endif %}
+						<div class="form-group">
+							<label class="text-white my-2" for="inputUsername">Identifiant :</label>
+							<input class="form-control" type="text" value="{{ last_username }}" name="username" id="inputUsername" class="form-control" autocomplete="username" required autofocus>
+						</div>
+						<div class="form-group">
+							<label class="text-white my-2" for="inputPassword">Mot de passe</label>
+							<input class="form-control" type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+						</div>
+						<input
+						type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+						<button class="btn btn-outline-dark bg-primary m-3" type="submit">
+							Me connecter
+						</button>
+					</form>
+					<div>
+						<p class="text-white">En cas de problème de connexion vous pouvez rédiger un ticket
+							<a class="text-decoration-none text-primary" href="#">ici</a>
+						</p>
+					</div>
+				</div>
+			</main>
+		</div>
+		<div class="container">
+			<div class="logoSite"></div>
+		</div>
+		<footer
+			class="container-fluid bg-dark text-center text-white footer">
+			<!-- Grid container -->
+			<div class="container p-2 pb-0">
+				<!-- Section: Social media -->
+				<section>
+					<div class="col-md-auto">
+						<div class="logo"></div>
+					</div>
+					<div class="text-center">
+						<p>Cours des stagiaires du CFSMA, made with some ❤️ and ☕.</p>
+					</div>
+				</section>
+				<!-- Section: Social media -->
+			</div>
+			<!-- Grid container -->
+
+			<!-- Copyright -->
+			<div class="text-center p-1">
+				<a class="btn btn-footer text-white" target="_blank" href="https://symfony.com/">Powered with Symfony</a>
+				-
+				<a class="btn btn-footer text-white" href="{{ path('app_about') }}">Documentation</a>
+			</div>
+			<!-- Copyright -->
+		</footer>
+	</body>
+</html>

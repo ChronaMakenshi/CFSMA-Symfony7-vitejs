@@ -1,0 +1,62 @@
+{% extends "base.html.twig" %}
+{% block main %}
+	{% if app.user %}
+		<section class="d-flex flex-lg-row flex-column justify-content-lg-between">
+			{{ form_start(formCompagnie) }}
+			<div class="p-5">
+				<h2 class="text-center">
+					{% if EditMode %}
+						Modifier une Compagnie
+					{% else %}
+						Ajouter une Compagnie
+					{% endif %}
+				</h2>
+				{% for message in app.flashes('success') %}
+					<div class="alert alert-success">
+						{{ message }}
+					</div>
+				{% endfor %}
+				<label for="exampleFormControlInput1" class="form-label">Nom de la compagnie :</label>
+				{{ form_row(formCompagnie.name)}}
+				<div class="d-flex justify-content-around mt-4">
+					<button type="submit" class="btn btn-primary btn-outline-success text-white">
+						{% if EditMode %}
+							Modifier
+						{% else %}
+							Enregistrer
+						{% endif %}
+					</button>
+					<a href="/addcompagnie/" class="btn btn-primary btn-outline-danger text-white">Annuler</a>
+				</div>
+			</div>
+			{{ form_end(formCompagnie) }}
+			<div class="p-5 w-75">
+				<table id="datatable" class="table table-bordered border border-3  w-100">
+					<thead>
+					<tr>
+						<th class="bg-danger" scope="col">Compagnie</th>
+						<th class="bg-danger" scope="col">Modifier / Supprimer</th>
+					</tr>
+					</thead>
+					<tbody class="table-dark">
+					{% for compagnie in compagnies %}
+						<tr>
+							<td>{{ compagnie.name }}</td>
+							<td>
+								<a class="text-decoration-none text-hover-success" href="/addcompagnie/{{ compagnie.id }}">Modifier</a>
+								/
+								<a class="text-decoration-none text-hover-danger" href="/addcompagnie/delete/{{ compagnie.id }}" onclick="return confirm('Supprimer ?')">Supprimer</a>
+							</td>
+						</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</section>
+	{% else %}
+		<div class="my-6">
+			<h1>Vous devez vous connecté</h1>
+			<a class="btn btn-primary" href="{{ path('app_logout') }}">Retour sur la page de connexion</a>
+		</div>
+	{% endif %}
+{% endblock %}

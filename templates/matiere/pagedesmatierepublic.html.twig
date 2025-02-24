@@ -1,0 +1,13 @@
+{% extends "base.html.twig" %}
+{% block main %}
+	{% if app.user %}
+		{% for matierepublic in matierepublics %}
+			<a class="btn btn-dark btn-lg m-3 fs-1" href="{{ path('app_page_cours_public', {id: matierepublic.id} )}}" role="button">{{ matierepublic.name }}</a>
+		{% endfor %}
+	{% else %}
+		<div class="my-6">
+			<h1>Vous devez vous connecté</h1>
+			<a class="btn btn-primary" href="{{ path('app_logout') }}">Retour sur la page de connexion</a>
+		</div>
+	{% endif %}
+{% endblock %}

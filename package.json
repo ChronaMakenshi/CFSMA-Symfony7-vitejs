@@ -1,0 +1,19 @@
+{
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build"
+    },
+    "devDependencies": {
+        "sass": "^1.79.5",
+        "vite": "^5.0",
+        "vite-plugin-symfony": "^7.0"
+    },
+    "dependencies": {
+        "@popperjs/core": "^2.11.8",
+        "bootstrap": "^5.3.3",
+        "datatables.net-bs5": "^2.1.8",
+        "jquery": "^3.7.1"
+    }
+}

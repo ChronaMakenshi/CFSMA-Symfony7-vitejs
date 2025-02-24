@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}CFSMA
+{% endblock %}
+
+{% block main %}
+{% if app.user %}
+<section class="d-flex flex-lg-row flex-column justify-content-lg-between">
+	<form action="" method="post" class="mx-auto">
+		<h2 class="text-center">
+			Modifier un Utilisateur
+		</h2>
+		{{ form_start(EditUserType) }}
+		{{ form_row(EditUserType.username, { label: 'Nom d\'Utilisateur :'}) }}
+			{{ form_row(EditUserType.plainPassword, { label: 'Mot de Passe :'}) }}
+	
+			{{ form_row(EditUserType.roles, { label: 'Nom du Rôle :' }) }}
+	
+			{{ form_row(EditUserType.section, { label: 'Nom des Sections :', }) }}
+			<div class="d-flex justify-content-around mt-2">
+				<button type="submit" class="btn btn-primary btn-outline-success text-white">
+						Modifier
+				</button>
+				<a href="{{ path('admin_app_register') }}" class="btn btn-primary btn-outline-danger text-white">Annuler</a>
+			</div>
+			{{ form_end(EditUserType) }}
+			<div class="p-5 w-75">
+			<table id="datatable" class="table table-bordered border border-3  w-100">
+				<thead>
+					<tr class="bg-danger">
+					  	<th scope="col">Utilisateur</th>
+						<th scope="col">Rôle</th>
+						<th scope="col">Compagnie</th>
+						<th scope="col">Section</th>
+						<th scope="col">Modifier / Supprimer</th>
+					</tr>
+				</thead>
+				<tbody class="bg-dark text-white">
+				{% for user in users %}
+								<tr>
+								<td>{{ user.username }}</td>
+								<td>
+								{% for role in user.roles %}
+                            {% if role == "ROLE_SUPERADMIN" %}
+                                SuperAdmin
+                            {% elseif role == "ROLE_ADMIN" %}
+                                Administrateur
+                            {% elseif role == "ROLE_CHEF" %}
+                                Chef de Section
+                            {% endif %}
+                        {% endfor %}
+								</td>
+								<td>
+								{% for compagnie in compagnies %}
+								{% for section in sections %}
+										{% if compagnie.id == section.compagnie.id and user.section == section %}
+									{{ compagnie.name}}
+									{% endif %}
+									{% endfor %}
+								{% endfor %}
+								</td>
+								<td>
+								{% for compagnie in compagnies %}
+								{% for section in sections %}
+										{% if compagnie.id == section.compagnie.id and user.section == section %}
+									{{ section.name}}
+									{% endif %}
+									{% endfor %}
+								{% endfor %}
+								</td>
+									<td>
+										<a class="text-decoration-none text-hover-success" href="/admin/addUsers/modifier/{{ user.id }}">Modifier</a>
+										/
+										<a class="text-decoration-none text-hover-danger" href="/admin/addUsers/delete/{{ user.id }}" onclick="return confirm('Supprimer ?')">Supprimer</a>
+									</td>
+								</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</section>
+	{% else %}
+		<div class="my-6">
+			<h1>Vous devez vous connecté</h1>
+			<a class="btn btn-primary" href="{{ path('app_logout') }}">Retour sur la page de connexion</a>
+		</div>
+	{% endif %}
+	{% endblock %}

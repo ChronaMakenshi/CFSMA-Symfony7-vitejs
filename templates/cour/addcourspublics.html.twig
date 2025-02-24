@@ -1,0 +1,121 @@
+{% extends "base.html.twig" %}
+{% block main %}
+	{% if app.user %}
+		<section class="d-flex flex-lg-row flex-column justify-content-lg-between">
+			{{ form_start(formCourspublic) }}
+			<div class="p-5">
+				<h2 class="text-center">
+					{% if EditMode %}
+						Modifier un Cours public
+					{% else %}
+						Ajouter un Cours public
+					{% endif %}
+				</h2>
+				{% for message in app.flashes('success') %}
+					<div class="alert alert-success">
+						{{ message }}
+					</div>
+				{% endfor %}
+				<label for="exampleFormControlInput1" class="form-label">Nom du Cours:</label>
+				{{ form_row(formCourspublic.name)}}
+				<label for="exampleFormControlInput1" class="form-label">Fichier du Cours:</label>
+				{{ form_row(formCourspublic.coursFilesp) }}
+				<label for="exampleFormControlInput1" class="form-label">Nom de la Matière :</label>
+				{{ form_row(formCourspublic.matierepublic) }}
+				<label for="exampleFormControlInput1" class="form-label">Nom de la Date :</label>
+				{{ form_row(formCourspublic.date) }}
+
+				<div class="d-flex justify-content-around mt-2">
+					<button type="submit" class="btn btn-primary btn-outline-success text-white">
+						{% if EditMode %}
+							Modifier
+						{% else %}
+							Enregistrer
+						{% endif %}
+					</button>
+					<a href="/addcourspublic/" class="btn btn-primary btn-outline-danger text-white">Annuler</a>
+				</div>
+			</div>
+			{{ form_end(formCourspublic) }}
+			<div class="p-5 w-75">
+				<table id="datatable" class="table table-bordered border border-3  w-100">
+					<thead>
+						<tr >
+							<th class="bg-danger" scope="col">Matière</th>
+							<th class="bg-danger" scope="col">Cours</th>
+							<th class="bg-danger" scope="col">Action</th>
+							<th class="bg-danger" scope="col">Visibilité</th>
+							<th class="bg-danger" scope="col">Date</th>
+						</tr>
+					</thead>
+					<tbody class="table-dark">
+						{% for matierepublic in matierepublics %}
+							{% for courpublic in courpublics %}
+								{% if courpublic.matierepublic.id == matierepublic.id %}
+									<tr>
+										<td>{{ matierepublic.name }}</td>
+										<td>
+											<h5 class="text-decoration-underline">{{ courpublic.name }}</h5>
+											{% for coursfilesp in courpublic.coursfilesps %}
+												<a class="text-decoration-none" href="/uploads/cours/public/{{ coursfilesp.name }}">{{ coursfilesp.name }}</a><br>
+												{% if app.request.attributes.get('_route') == 'app_cour_public_edit' %}
+													<a href="#" class="text-decoration-none text-hover-danger" data-id="{{ coursfilesp.id }}" data-token="{{ csrf_token('delete' ~ coursfilesp.id) }}" onclick="deleteCoursPublicFile(event)">Supprimer</a>
+													<br>
+												{% endif %}
+											{% endfor %}
+
+											<script>
+												function deleteCoursPublicFile(event) {
+													event.preventDefault();
+
+													const link = event.currentTarget;
+													const id = link.getAttribute('data-id');
+													const token = link.getAttribute('data-token');
+
+													fetch(`/addcourspublic/delete/cours/public/${id}`, {
+														method: 'DELETE',
+														headers: {
+															'Content-Type': 'application/json'
+														},
+														body: JSON.stringify({_token: token})
+													}).then(response => response.json())
+															.then(data => {
+																if (data.success) {
+																	alert('File deleted successfully');
+																	location.reload();  // Actualiser la page après suppression réussie
+																} else {
+																	alert(data.message);
+																}
+															})
+															.catch(error => console.error('Error:', error));
+												}
+											</script>
+										</td>
+										<td>
+											<a class="text-decoration-none text-hover-success" href={{ path('app_cour_public_edit', {id: courpublic.id} )}}>Modifier</a>
+											/
+											<a class="text-decoration-none text-hover-danger" href={{ path('app_cour_public_delete', {id: courpublic.id} )}}>Supprimer</a>
+										</td>
+										<td>
+											{% if  courpublic.date < date() %}
+												Visible
+											{% else %}
+												Non-Visible
+											{% endif %}
+										</td>
+										<td>{{ courpublic.date|date("d/m/Y") }}</td>
+									</tr>
+								{% endif %}
+							{% endfor %}
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</section>
+	{% else %}
+		<div class="my-6">
+			<h1>Vous devez vous connecté</h1>
+			<a class="btn btn-primary" href="{{ path('app_logout') }}">Retour sur la page de connexion</a>
+		</div>
+	{% endif %}
+{% endblock %}

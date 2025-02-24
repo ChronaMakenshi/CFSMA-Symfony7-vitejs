@@ -1,0 +1,138 @@
+{% extends "base.html.twig" %}
+{% block main %}
+	{% if app.user %}
+		<section class="d-flex flex-lg-row flex-column justify-content-lg-between">
+			{{ form_start(formCours) }}
+			<div class="p-5">
+				<h2 class="text-center">
+					{% if EditMode %}
+						Modifier un Cours
+					{% else %}
+						Ajouter un Cours
+					{% endif %}
+				</h2>
+				{% for message in app.flashes('success') %}
+					<div class="alert alert-success">
+						{{ message }}
+					</div>
+				{% endfor %}
+				<label for="exampleFormControlInput1" class="form-label">Nom du Cours:</label>
+				{{ form_row(formCours.name)}}
+				<label for="exampleFormControlInput1" class="form-label">Fichier du Cours:</label>
+				{{ form_row(formCours.coursFiles) }}
+				<label for="exampleFormControlInput1" class="form-label">Nom de la Filière/Cohorte :</label>
+				{{ form_row(formCours.classe) }}
+				<label for="exampleFormControlInput1" class="form-label">Nom de la Matière :</label>
+				{{ form_row(formCours.matiere) }}
+				<label for="exampleFormControlInput1" class="form-label">Nom de la Date :</label>
+				{{ form_row(formCours.date) }}
+
+				<div class="d-flex justify-content-around mt-2">
+					<button type="submit" class="btn btn-primary btn-outline-success text-white">
+						{% if EditMode %}
+							Modifier
+						{% else %}
+							Enregistrer
+						{% endif %}
+					</button>
+					<a href="/addcours/" class="btn btn-primary btn-outline-danger text-white">Annuler</a>
+				</div>
+				{{ form_end(formCours) }}
+			</div>
+			<div class="p-5 w-75">
+				<table id="datatable" class="table table-bordered border border-3 w-100">
+					<thead>
+					<tr>
+						<th class="bg-danger" scope="col">Filière</th>
+						<th class="bg-danger" scope="col">Cohorte</th>
+						<th class="bg-danger" scope="col">Matière</th>
+						<th class="bg-danger" scope="col">Cours</th>
+						<th class="bg-danger" scope="col">Action</th>
+						<th class="bg-danger" scope="col">Visibilité</th>
+						<th class="bg-danger" scope="col">Date</th>
+					</tr>
+					</thead>
+					<tbody class="table-dark">
+					{% for filiere in filieres %}
+						{% if
+							(is_granted('ROLE_SUPERADMIN') or is_granted('ROLE_ADMIN')) or
+							(is_granted('ROLE_CHEF') and app.user.section and filiere.section.id == app.user.section.id) or
+							(is_granted('ROLE_FORMATEUR') and app.user.filiere and filiere.id == app.user.filiere.id)
+						%}
+							{% for cohorte in cohortes %}
+								{% if cohorte.filiere and cohorte.filiere.id == filiere.id %}
+									{% for matiere in matieres %}
+										{% for cour in cours %}
+											{% if cour.classe and cour.classe.id == cohorte.id and cour.matiere and cour.matiere.id == matiere.id %}
+												<tr>
+													<td>{{ filiere.name }}</td>
+													<td>{{ cohorte.name }}</td>
+													<td>{{ matiere.name }}</td>
+													<td>
+														<h5 class="text-decoration-underline">{{ cour.name }}</h5>
+														{% for coursfile in cour.coursfiles %}
+															<a class="text-decoration-none" href="/uploads/cours/priver/{{ coursfile.name }}">{{ coursfile.name }}</a><br>
+															{% if app.request.attributes.get('_route') == 'app_cour_edit' %}
+																<a href="#" class="text-decoration-none text-hover-danger" data-id="{{ coursfile.id }}" data-token="{{ csrf_token('delete' ~ coursfile.id) }}" onclick="deleteCoursFile(event)">Supprimer</a>
+																<br>
+															{% endif %}
+														{% endfor %}
+
+														<script>
+															function deleteCoursFile(event) {
+																event.preventDefault();
+
+																const link = event.currentTarget;
+																const id = link.getAttribute('data-id');
+																const token = link.getAttribute('data-token');
+
+																fetch(`/addcours/delete/cours/priver/${id}`, {
+																	method: 'DELETE',
+																	headers: {
+																		'Content-Type': 'application/json'
+																	},
+																	body: JSON.stringify({_token: token})
+																}).then(response => response.json())
+																		.then(data => {
+																			if (data.success) {
+																				alert('File deleted successfully');
+																				location.reload();  // Actualiser la page après suppression réussie
+																			} else {
+																				alert(data.message);
+																			}
+																		})
+																		.catch(error => console.error('Error:', error));
+															}
+														</script>
+													<td>
+														<a class="text-decoration-none text-hover-success" href="{{ path('app_cour_edit', {id: cour.id}) }}">Modifier</a>
+														/
+														<a class="text-decoration-none text-hover-danger" href="{{ path('app_cour_delete', {id: cour.id}) }}">Supprimer</a>
+													</td>
+													<td>
+														{% if cour.date < date() %}
+															Visible
+														{% else %}
+															Non-Visible
+														{% endif %}
+													</td>
+													<td>{{ cour.date|date("d/m/Y") }}</td>
+												</tr>
+											{% endif %}
+										{% endfor %}
+									{% endfor %}
+								{% endif %}
+							{% endfor %}
+						{% endif %}
+					{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</section>
+	{% else %}
+		<div class="my-6">
+			<h1>Vous devez vous connecté</h1>
+			<a class="btn btn-primary" href="{{ path('app_logout') }}">Retour sur la page de connexion</a>
+		</div>
+	{% endif %}
+{% endblock %}

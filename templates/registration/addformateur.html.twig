@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}CFSMA{% endblock %}
+
+{% block main %}
+	{% if app.user %}
+		<section class="d-flex flex-lg-row flex-column justify-content-lg-between">
+			<form action="" method="post" class="mx-auto">
+				<h2 class="text-center">
+					{% if EditMode %}
+						Modifier un Formateur
+					{% else %}
+						Ajouter un Formateur
+					{% endif %}
+				</h2>
+				{% for message in app.flashes('success') %}
+					<div class="alert alert-success">
+						{{ message }}
+					</div>
+				{% endfor %}
+				{{ form_start(registrationForm) }}
+				{{ form_row(registrationForm.username, { label: 'Nom d\'Utilisateur :' }) }}
+				{{ form_row(registrationForm.plainPassword, { label: 'Mot de Passe :' }) }}
+				<div class="d-none">
+					{{ form_row(registrationForm.roles, { label: 'Nom du Rôle :' }) }}
+				</div>
+				{{ form_row(registrationForm.filiere, { label: "Nom des Sections :" }) }}
+				<div class="d-flex justify-content-around mt-2">
+					<button type="submit" class="btn btn-primary btn-outline-success text-white">
+						{% if EditMode %}
+							Modifier
+						{% else %}
+							Enregistrer
+						{% endif %}
+					</button>
+					<a href="{{ path('admin_app_formateur') }}" class="btn btn-primary btn-outline-danger text-white">Annuler</a>
+				</div>
+				{{ form_end(registrationForm) }}
+				<div class="p-5 w-75">
+					<table id="datatable" class="table table-bordered border border-3 w-100">
+						<thead>
+						<tr>
+							<th class="bg-danger" scope="col">Utilisateur</th>
+							<th class="bg-danger" scope="col">Rôle</th>
+							<th class="bg-danger" scope="col">Section</th>
+							<th class="bg-danger" scope="col">Filière</th>
+							<th class="bg-danger" scope="col">Modifier / Supprimer</th>
+						</tr>
+						</thead>
+						<tbody class="table-dark">
+						{% if is_granted('ROLE_SUPERADMIN') or is_granted('ROLE_ADMIN') %}
+							{% for user in users %}
+								{% if "ROLE_FORMATEUR" in user.roles %}
+									<tr>
+										<td>{{ user.username }}</td>
+										<td>Formateur</td>
+										<td>
+											{% for section in sections %}
+												{% if user.filiere.section.id == section.id %}
+													{{ section.name }}
+												{% endif %}
+											{% endfor %}
+										</td>
+										<td>
+											{{ user.filiere.name }}
+										</td>
+										<td>
+											<a class="text-decoration-none text-hover-success" href="/admin/addFormateurs/modifier/{{ user.id }}">Modifier</a>
+											/
+											<a class="text-decoration-none text-hover-danger" href="/admin/addFormateurs/delete/{{ user.id }}" onclick="return confirm('Supprimer ?')">Supprimer</a>
+										</td>
+									</tr>
+								{% endif %}
+							{% endfor %}
+						{% endif %}
+						{% if is_granted('ROLE_CHEF') %}
+							{% for user in users %}
+								{% if "ROLE_FORMATEUR" in user.roles and user.filiere.section.id == app.user.section.id %}
+									<tr>
+										<td>{{ user.username }}</td>
+										<td>Formateur</td>
+										<td>{{ app.user.section.name }}</td>
+										<td>{{ user.filiere.name }}</td>
+										<td>
+											<a class="text-decoration-none text-hover-success" href="/admin/addFormateurs/modifier/{{ user.id }}">Modifier</a>
+											/
+											<a class="text-decoration-none text-hover-danger" href="/admin/addFormateurs/delete/{{ user.id }}" onclick="return confirm('Supprimer ?')">Supprimer</a>
+										</td>
+									</tr>
+								{% endif %}
+							{% endfor %}
+						{% endif %}
+						</tbody>
+					</table>
+				</div>
+			</form>
+		</section>
+	{% else %}
+		<div class="my-6">
+			<h1>Vous devez vous connecter</h1>
+			<a class="btn btn-primary" href="{{ path('app_logout') }}">Retour sur la page de connexion</a>
+		</div>
+	{% endif %}
+{% endblock %}

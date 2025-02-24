@@ -1,0 +1,163 @@
+{% extends "base.html.twig" %}
+{% block main %}
+	{% if app.user %}
+		<div class="p-5">
+			<table id="datatable" class="table table-bordered border border-3  w-100">
+				<thead>
+					<tr>
+						<th class="bg-danger" scope="col">Filière</th>
+						<th class="bg-danger" scope="col">Cohorte</th>
+						<th class="bg-danger" scope="col">Matière</th>
+						<th class="bg-danger" scope="col">Cours</th>
+						<th class="bg-danger" scope="col">Date</th>
+					</tr>
+				</thead>
+				<tbody class="table-dark">
+					{% if is_granted('ROLE_SUPERADMIN') or is_granted('ROLE_ADMIN') %}
+						{% for filiere in filieres %}
+							{% for cohorte in cohortes %}
+								{% if  cohorte.filiere.id == filiere.id %}
+									{% for cour in cours %}
+										{% if cohorte.id == cour.classe.id %}
+											{% if matiere.id == cour.matiere.id %}
+												{% if cour.date < date() %}
+													<tr>
+														<td>{{ filiere.name }}</td>
+														<td>{{ cohorte.name }}</td>
+														<td>{{ matiere.name }}</td>
+														<td>
+															<h5 class="text-decoration-underline">{{ cour.name }}</h5>
+															{% for coursfile in cour.coursfiles %}
+																<a class="text-decoration-none" href="/uploads/cours/{{ coursfile.name }}">{{ coursfile.name }}</a><br>
+																{% if app.request.attributes.get('_route') == 'addcoursEdit' %}
+																	<a class="text-decoration-none text-hover-danger" href={{ path('cours_delete_fichier', {id: coursfile.id} )}} data-delete data-token={{ csrf_token('delete' ~ coursfile.id )}}>Supprimer</a>
+																	<br>
+																{% endif %}
+															{% endfor %}
+														</td>
+														<td>{{ cour.date|date("d/m/Y") }}</td>
+													</tr>
+												{% endif %}
+											{% endif %}
+										{% endif %}
+									{% endfor %}
+								{% endif %}
+							{% endfor %}
+						{% endfor %}
+					{% endif %}
+					{% if is_granted('ROLE_CHEF') %}
+						{% for section in sections %}
+							{% for filiere in filieres %}
+								{% if  filiere.section.id == section.id %}
+									{% for cohorte in cohortes %}
+										{% if  cohorte.filiere.id == filiere.id %}
+											{% for cour in cours %}
+												{% if cohorte.id == cour.classe.id %}
+													{% if matiere.id == cour.matiere.id %}
+														{% if app.user.section == section %}
+															{% if cour.date < date() %}
+																<tr>
+																	<td>{{ filiere.name }}</td>
+																	<td>{{ cohorte.name }}</td>
+																	<td>{{ matiere.name }}</td>
+																	<td>
+																		<h5 class="text-decoration-underline">{{ cour.name }}</h5>
+																		{% for coursfile in cour.coursfiles %}
+																			<a class="text-decoration-none" href="/uploads/cours/{{ coursfile.name }}">{{ coursfile.name }}</a><br>
+																			{% if app.request.attributes.get('_route') == 'addcoursEdit' %}
+																				<a class="text-decoration-none text-hover-danger" href={{ path('cours_delete_fichier', {id: coursfile.id} )}} data-delete data-token={{ csrf_token('delete' ~ coursfile.id )}}>Supprimer</a>
+																				<br>
+																			{% endif %}
+																		{% endfor %}
+																	</td>
+																	<td>{{ cour.date|date("d/m/Y") }}</td>
+																</tr>
+															{% endif %}
+														{% endif %}
+													{% endif %}
+												{% endif %}
+											{% endfor %}
+										{% endif %}
+									{% endfor %}
+								{% endif %}
+							{% endfor %}
+						{% endfor %}
+					{% endif %}
+					{% if is_granted('ROLE_FORMATEUR') %}
+						{% for filiere in filieres %}
+							{% for cohorte in cohortes %}
+								{% if  cohorte.filiere.id == filiere.id %}
+									{% for cour in cours %}
+										{% if cohorte.id == cour.classe.id %}
+											{% if matiere.id == cour.matiere.id %}
+												{% if app.user.filiere == filiere %}
+													{% if cour.date < date() %}
+														<tr>
+															<td>{{ filiere.name }}</td>
+															<td>{{ cohorte.name }}</td>
+															<td>{{ matiere.name }}</td>
+															<td>
+																<h5 class="text-decoration-underline">{{ cour.name }}</h5>
+																{% for coursfile in cour.coursfiles %}
+																	<a class="text-decoration-none" href="/uploads/cours/{{ coursfile.name }}">{{ coursfile.name }}</a><br>
+																	{% if app.request.attributes.get('_route') == 'addcoursEdit' %}
+																		<a class="text-decoration-none text-hover-danger" href={{ path('cours_delete_fichier', {id: coursfile.id} )}} data-delete data-token={{ csrf_token('delete' ~ coursfile.id )}}>Supprimer</a>
+																		<br>
+																	{% endif %}
+																{% endfor %}
+															</td>
+															<td>{{ cour.date|date("d/m/Y") }}</td>
+														</tr>
+													{% endif %}
+												{% endif %}
+											{% endif %}
+										{% endif %}
+									{% endfor %}
+								{% endif %}
+							{% endfor %}
+						{% endfor %}
+					{% endif %}
+					{% if is_granted('ROLE_USER')%}
+						{% for filiere in filieres %}
+							{% for cohorte in cohortes %}
+								{% if  cohorte.filiere.id == filiere.id %}
+									{% for cour in cours %}
+										{% if cohorte.id == cour.classe.id %}
+											{% if matiere.id == cour.matiere.id %}
+												{% if app.user.classe == cohorte %}
+													{% if cour.date < date() %}
+														<tr>
+															<td>{{ filiere.name }}</td>
+															<td>{{ cohorte.name }}</td>
+															<td>{{ matiere.name }}</td>
+															<td>
+																<h5 class="text-decoration-underline">{{ cour.name }}</h5>
+																{% for coursfile in cour.coursfiles %}
+																	<a class="text-decoration-none" href="/uploads/cours/{{ coursfile.name }}">{{ coursfile.name }}</a><br>
+																	{% if app.request.attributes.get('_route') == 'addcoursEdit' %}
+																		<a class="text-decoration-none text-hover-danger" href={{ path('cours_delete_fichier', {id: coursfile.id} )}} data-delete data-token={{ csrf_token('delete' ~ coursfile.id )}}>Supprimer</a>
+																		<br>
+																	{% endif %}
+																{% endfor %}
+															</td>
+															<td>{{ cour.date|date("d/m/Y") }}</td>
+														</tr>
+													{% endif %}
+												{% endif %}
+											{% endif %}
+										{% endif %}
+									{% endfor %}
+								{% endif %}
+							{% endfor %}
+						{% endfor %}
+					{% endif %}
+				</tbody>
+			</table>
+		</div>
+	{% else %}
+		<div class="my-6">
+			<h1>Vous devez vous connecté</h1>
+			<a class="btn btn-primary" href="{{ path('app_logout') }}">Retour sur la page de connexion</a>
+		</div>
+	{% endif %}
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base.html.twig" %}
+{% block main %}
+	{% if app.user %}
+		<div class="mb-3">
+			Vous êtes connecté(e) comme
+			{{ app.user.username }}.
+		</div>
+		{% if is_granted('ROLE_SUPERADMIN') or is_granted('ROLE_ADMIN') %}
+			{% for matiere in matieres %}
+				<a class="btn btn-dark btn-lg m-3 fs-1" href="{{ path('app_page_des_cours', {id: matiere.id})}}" role="button">{{ matiere.name }}</a>
+			{% endfor %}
+		{% endif %}
+		{% if is_granted('ROLE_CHEF') %}
+			{% for section in sections %}
+				{% if app.user.section == section %}
+					<h2>Cours Section
+						{{section.name}}</h2>
+					{% for matiere in matieres %}
+						<a class="btn btn-dark btn-lg m-3 fs-1" href="{{ path('app_page_des_cours', {id: matiere.id})}}" role="button">{{ matiere.name }}</a>
+					{% endfor %}
+				{% endif %}
+			{% endfor %}
+		{% endif %}
+		{% if is_granted('ROLE_FORMATEUR') %}
+			{% for section in sections %}
+				{% for filiere in filieres %}
+					{% if  filiere.section.id == section.id %}
+						{% if app.user.filiere == filiere %}
+							<h2>Cours Filière
+								{{filiere.name}}</h2>
+							{% for matiere in matieres %}
+								<a class="btn btn-dark btn-lg m-3 fs-1" href="{{ path('app_page_des_cours', {id: matiere.id})}}" role="button">{{ matiere.name }}</a>
+							{% endfor %}
+						{% endif %}
+					{% endif %}
+				{% endfor %}
+			{% endfor %}
+		{% endif %}
+		{% if is_granted('ROLE_USER') %}
+			{% for section in sections %}
+				{% for filiere in filieres %}
+					{% for cohorte in cohortes %}
+						{% if  filiere.section.id == section.id and cohorte.filiere.id == filiere.id and app.user.classe == cohorte  %}
+							<h2>Cours Filière
+								{{filiere.name}}</h2>
+							<h3>Cohorte
+								{{cohorte.name}}</h3>
+							{% for matiere in matieres %}
+								<a class="btn btn-dark btn-lg m-3 fs-1" href="{{ path('app_page_des_cours', {id: matiere.id})}}" role="button">{{ matiere.name }}</a>
+							{% endfor %}
+						{% endif %}
+					{% endfor %}
+				{% endfor %}
+			{% endfor %}
+		{% endif %}
+	{% else %}
+		<div class="my-6">
+			<h1>Vous devez vous connecté</h1>
+			<a class="btn btn-primary" href="{{ path('app_logout') }}">Retour sur la page de connexion</a>
+		</div>
+	{% endif %}
+{% endblock %}

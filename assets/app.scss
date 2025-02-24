@@ -1,0 +1,141 @@
+@import "./custom";
+@import "~bootstrap/scss/bootstrap";
+@import 'datatables.net-bs5';
+
+@font-face {
+  font-family: 'Cormorant Garamond';
+  src: url('/src/assets/fonts/CormorantGaramond-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+#registration_form__token[type="hidden"]:disabled {
+  background: #ccc;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  text-align: center;
+  font-family: 'Cormorant Garamond', serif;
+}
+
+h1 {
+  text-shadow: 0 2px 0 #070707, 0 -2px 0 #000000;
+}
+
+.main {
+  min-height: 100%;
+  position: relative;
+  padding-top: 7%;
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+.fond {
+  background-image: url('@images/fond.jpg');
+  background-repeat: no-repeat;
+  width: 100%;
+  height: auto;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logoSite {
+  background-image: url('@images/Image0.png');
+  background-repeat: no-repeat;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  margin: 5% auto;
+  background-size: contain;
+}
+
+.logoSites {
+  background-image: url('@images/Image0.png');
+  background-repeat: no-repeat;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin: 5% auto;
+  background-size: contain;
+}
+
+.logo {
+  background-image: url('@images/logo.png');
+  background-repeat: no-repeat;
+  width: 40px;
+  height: 60px;
+  margin: 0 auto;
+  background-size: contain;
+}
+
+.ErrorImage{
+  background-image: url('@images/Neuneu_404.gif');
+  background-repeat: no-repeat;
+  width: 500px;
+  height: 500px;
+  margin: 0 auto;
+  background-size: contain;
+}
+
+@media all and (max-width: 197px) {
+  .footer {
+    position: relative;
+  }
+}
+
+@media all and (max-width: 992px) {
+  .dropdown-menu .submenu {
+    display: none;
+    bottom: 100%;
+    top: 25px;
+  }
+
+  .dropdown-menu .submenu-bottom {
+    right: 100%;
+    bottom: auto;
+  }
+
+  .dropdown-menu > li:hover > .submenu {
+    display: block;
+    background-color: $dark;
+  }
+
+  .footer1 {
+    display: none;
+  }
+}
+
+@media all and (min-width: 992px) {
+  .dropdown-menu li {
+    position: relative;
+  }
+
+  .dropdown-menu .submenu {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: 0;
+  }
+
+  .dropdown-menu > li:hover > .submenu {
+    display: block;
+    background-color: $dark;
+  }
+}

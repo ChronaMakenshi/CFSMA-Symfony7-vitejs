@@ -1,0 +1,166 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}CFSMA{% endblock %}
+
+{% block main %}
+	{% if app.user %}
+		<section class="d-flex flex-lg-row flex-column justify-content-lg-between">
+			<form action="" method="post" class="mx-auto">
+				<h2 class="text-center">
+					{% if EditMode %}
+						Modifier un Stagiaire
+					{% else %}
+						Ajouter un Stagiaire
+					{% endif %}
+				</h2>
+				{% for message in app.flashes('success') %}
+					<div class="alert alert-success">
+						{{ message }}
+					</div>
+				{% endfor %}
+				{{ form_start(registrationForm) }}
+				{{ form_row(registrationForm.username, { label: 'Nom d\'Utilisateur :' }) }}
+				{{ form_row(registrationForm.plainPassword, { label: 'Mot de Passe :' }) }}
+				<div class="d-none">
+					{{ form_row(registrationForm.roles, { label: 'Nom du Rôle :' }) }}
+				</div>
+				{{ form_row(registrationForm.classe, { label: 'Nom des Sections :' }) }}
+				<div class="d-flex justify-content-around mt-2">
+					<button type="submit" class="btn btn-primary btn-outline-success text-white">
+						{% if EditMode %}
+							Modifier
+						{% else %}
+							Enregistrer
+						{% endif %}
+					</button>
+					<a href="{{ path('admin_app_stagiaires') }}" class="btn btn-primary btn-outline-danger text-white">Annuler</a>
+				</div>
+				{{ form_end(registrationForm) }}
+			</form>
+			<div class="p-5 w-75">
+				<table id="datatable" class="table table-bordered border border-3 w-100">
+					<thead>
+					<tr>
+						<th class="bg-danger" scope="col">Utilisateur</th>
+						<th class="bg-danger" scope="col">Rôle</th>
+						<th class="bg-danger" scope="col">Section</th>
+						<th class="bg-danger" scope="col">Filière</th>
+						<th class="bg-danger" scope="col">Cohorte</th>
+						<th class="bg-danger" scope="col">Modifier / Supprimer</th>
+					</tr>
+					</thead>
+					<tbody class="table-dark">
+					{% if is_granted('ROLE_SUPERADMIN') or is_granted('ROLE_ADMIN') %}
+						{% for user in users %}
+							{% if user is not null %}
+								{% for section in sections %}
+									{% if section is not null %}
+										{% for filiere in filieres %}
+											{% if filiere is not null and filiere.section is not null and filiere.section.id == section.id %}
+												{% for cohorte in cohortes %}
+													{% if cohorte is not null and cohorte.filiere is not null and cohorte.filiere.id == filiere.id and user.classe == cohorte %}
+														<tr>
+															<td>{{ user.username }}</td>
+															<td>
+																{% for role in user.roles %}
+																	{% if role == 'ROLE_USER' %}
+																		Stagiaire
+																	{% endif %}
+																{% endfor %}
+															</td>
+															<td>{{ section.name }}</td>
+															<td>{{ filiere.name }}</td>
+															<td>{{ cohorte.name }}</td>
+															<td>
+																<a class="text-decoration-none text-hover-success" href="{{ path('admin_app_stagiaires_edit', {'id': user.id}) }}">Modifier</a> /
+																<a class="text-decoration-none text-hover-danger" href="{{ path('admin_app_stagiaires_delete', {'id': user.id}) }}" onclick="return confirm('Supprimer ?')">Supprimer</a>
+															</td>
+														</tr>
+													{% endif %}
+												{% endfor %}
+											{% endif %}
+										{% endfor %}
+									{% endif %}
+								{% endfor %}
+							{% endif %}
+						{% endfor %}
+					{% endif %}
+
+					{% if is_granted('ROLE_CHEF') %}
+						{% for user in users %}
+							{% if user is not null and app.user.section is not null %}
+								{% for section in sections %}
+									{% if section is not null and section.id == app.user.section.id %}
+										{% for filiere in filieres %}
+											{% if filiere is not null and filiere.section is not null and filiere.section.id == section.id %}
+												{% for cohorte in cohortes %}
+													{% if cohorte is not null and cohorte.filiere is not null and cohorte.filiere.id == filiere.id and user.classe == cohorte %}
+														<tr>
+															<td>{{ user.username }}</td>
+															<td>
+																{% for role in user.roles %}
+																	{% if role == 'ROLE_USER' %}
+																		Stagiaire
+																	{% endif %}
+																{% endfor %}
+															</td>
+															<td>{{ section.name }}</td>
+															<td>{{ filiere.name }}</td>
+															<td>{{ cohorte.name }}</td>
+															<td>
+																<a class="text-decoration-none text-hover-success" href="{{ path('admin_app_stagiaires_edit', {'id': user.id}) }}">Modifier</a> /
+																<a class="text-decoration-none text-hover-danger" href="{{ path('admin_app_stagiaires_delete', {'id': user.id}) }}" onclick="return confirm('Supprimer ?')">Supprimer</a>
+															</td>
+														</tr>
+													{% endif %}
+												{% endfor %}
+											{% endif %}
+										{% endfor %}
+									{% endif %}
+								{% endfor %}
+							{% endif %}
+						{% endfor %}
+					{% endif %}
+
+					{% if is_granted('ROLE_FORMATEUR') %}
+						{% for user in users %}
+							{% if user is not null and app.user.filiere is not null %}
+								{% for filiere in filieres %}
+									{% if filiere is not null and filiere.id == app.user.filiere.id %}
+										{% for cohorte in cohortes %}
+											{% if cohorte is not null and cohorte.filiere is not null and cohorte.filiere.id == filiere.id and user.classe == cohorte %}
+												<tr>
+													<td>{{ user.username }}</td>
+													<td>
+														{% for role in user.roles %}
+															{% if role == 'ROLE_USER' %}
+																Stagiaire
+															{% endif %}
+														{% endfor %}
+													</td>
+													<td>{{ filiere.section ? filiere.section.name : 'N/A' }}</td>
+													<td>{{ filiere.name }}</td>
+													<td>{{ cohorte.name }}</td>
+													<td>
+														<a class="text-decoration-none text-hover-success" href="{{ path('admin_app_stagiaires_edit', {'id': user.id}) }}">Modifier</a> /
+														<a class="text-decoration-none text-hover-danger" href="{{ path('admin_app_stagiaires_delete', {'id': user.id}) }}" onclick="return confirm('Supprimer ?')">Supprimer</a>
+													</td>
+												</tr>
+											{% endif %}
+										{% endfor %}
+									{% endif %}
+								{% endfor %}
+							{% endif %}
+						{% endfor %}
+					{% endif %}
+					</tbody>
+				</table>
+			</div>
+		</section>
+	{% else %}
+		<div class="my-6">
+			<h1>Vous devez vous connecter</h1>
+			<a class="btn btn-primary" href="{{ path('app_logout') }}">Retour sur la page de connexion</a>
+		</div>
+	{% endif %}
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends "base.html.twig" %}
+{% block main %}
+{% if app.user %}
+	<section class="d-flex flex-lg-row flex-column justify-content-lg-between">
+		{{ form_start(formCohorte) }}
+		<div class="p-5">
+			<h2 class="text-center">
+				{% if EditMode %}
+					Modifier une Cohorte
+				{% else %}
+					Ajouter une Cohorte
+				{% endif %}
+			</h2>
+			{% for message in app.flashes('success') %}
+				<div class="alert alert-success">
+					{{ message }}
+				</div>
+			{% endfor %}
+			<label for="exampleFormControlInput1" class="form-label">Nom de la Cohorte:</label>
+			{{ form_row(formCohorte.name)}}
+			<label for="exampleFormControlInput1" class="form-label">Nom de la Section/Cohorte :</label>
+			{{ form_row(formCohorte.filiere) }}
+			<div class="d-flex justify-content-around mt-4">
+				<button type="submit" class="btn btn-primary btn-outline-success text-white">
+					{% if EditMode %}
+						Modifier
+					{% else %}
+						Enregistrer
+					{% endif %}
+				</button>
+				<a href="/addcohorte/" class="btn btn-primary btn-outline-danger text-white">Annuler</a>
+			</div>
+			{{ form_end(formCohorte) }}
+		</div>
+		<div class="p-5 w-75">
+			<table id="datatable" class="table table-bordered border border-3  w-100">
+				<thead>
+					<tr>
+						<th class="bg-danger" scope="col">Section</th>
+						<th class="bg-danger" scope="col">Filière</th>
+						<th class="bg-danger" scope="col">Cohorte</th>
+						<th class="bg-danger" scope="col">Action</th>
+					</tr>
+				</thead>
+				<tbody class="table-dark text-white">
+				{% if is_granted('ROLE_SUPERADMIN') or is_granted('ROLE_ADMIN') %}
+					{% for section in sections %}
+						{% if section is not null %}
+							{% for filiere in filieres %}
+								{% if filiere is not null and filiere.section and filiere.section.id == section.id %}
+									{% for cohorte in cohortes %}
+										{% if cohorte is not null and cohorte.filiere and cohorte.filiere.id == filiere.id %}
+											<tr>
+												<td>{{ section.name }}</td>
+												<td>{{ filiere.name }}</td>
+												<td>{{ cohorte.name }}</td>
+												<td>
+													<a class="text-decoration-none text-hover-success" href="/addcohorte/{{ cohorte.id }}">Modifier</a> /
+													<a class="text-decoration-none text-hover-danger" href="/addcohorte/delete/{{ cohorte.id }}" onclick="return confirm('Supprimer ?')">Supprimer</a>
+												</td>
+											</tr>
+										{% endif %}
+									{% endfor %}
+								{% endif %}
+							{% endfor %}
+						{% endif %}
+					{% endfor %}
+				{% endif %}
+
+				{% if is_granted('ROLE_CHEF') %}
+					{% for section in sections %}
+						{% if section is not null and app.user.section and section.id == app.user.section.id %}
+							{% for filiere in filieres %}
+								{% if filiere is not null and filiere.section and filiere.section.id == section.id %}
+									{% for cohorte in cohortes %}
+										{% if cohorte is not null and cohorte.filiere and cohorte.filiere.id == filiere.id %}
+											<tr>
+												<td>{{ section.name }}</td>
+												<td>{{ filiere.name }}</td>
+												<td>{{ cohorte.name }}</td>
+												<td>
+													<a class="text-decoration-none text-hover-success" href="/addcohorte/{{ cohorte.id }}">Modifier</a> /
+													<a class="text-decoration-none text-hover-danger" href="/addcohorte/delete/{{ cohorte.id }}" onclick="return confirm('Supprimer ?')">Supprimer</a>
+												</td>
+											</tr>
+										{% endif %}
+									{% endfor %}
+								{% endif %}
+							{% endfor %}
+						{% endif %}
+					{% endfor %}
+				{% endif %}
+
+				{% if is_granted('ROLE_FORMATEUR') %}
+					{% for filiere in filieres %}
+						{% if filiere is not null and app.user.filiere and filiere.id == app.user.filiere.id %}
+							{% for cohorte in cohortes %}
+								{% if cohorte is not null and cohorte.filiere and cohorte.filiere.id == filiere.id %}
+									<tr>
+										<td>{{ filiere.section ? filiere.section.name : "N/A" }}</td>
+										<td>{{ filiere.name }}</td>
+										<td>{{ cohorte.name }}</td>
+										<td>
+											<a class="text-decoration-none text-hover-success" href="/addcohorte/{{ cohorte.id }}">Modifier</a> /
+											<a class="text-decoration-none text-hover-danger" href="/addcohorte/delete/{{ cohorte.id }}" onclick="return confirm('Supprimer ?')">Supprimer</a>
+										</td>
+									</tr>
+								{% endif %}
+							{% endfor %}
+						{% endif %}
+					{% endfor %}
+				{% endif %}
+			</table>
+		</div>
+	</section>
+	{% else %}
+		<div class="my-6">
+			<h1>Vous devez vous connecté</h1>
+			<a class="btn btn-primary" href="{{ path('app_logout') }}">Retour sur la page de connexion</a>
+		</div>
+	{% endif %}
+{% endblock %}

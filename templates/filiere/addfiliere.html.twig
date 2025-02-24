@@ -1,0 +1,100 @@
+{% extends "base.html.twig" %}
+{% block main %}
+	{% if app.user %}
+		<section class="d-flex flex-lg-row flex-column justify-content-lg-between">
+			<div class="p-5">
+				{{ form_start(formFiliere) }}
+				<h2 class="text-center">
+					{% if EditMode %}
+						Modifier une Filière
+					{% else %}
+						Ajouter une Filière
+					{% endif %}
+				</h2>
+				{% for message in app.flashes('success') %}
+					<div class="alert alert-success">
+						{{ message }}
+					</div>
+				{% endfor %}
+				<label for="exampleFormControlInput1" class="form-label">Nom de la Filière:</label>
+				{{ form_row(formFiliere.name) }}
+				<label for="exampleFormControlInput1" class="form-label">Nom de la Compagnie/Section :</label>
+				{{ form_row(formFiliere.section) }}
+				<div class="d-flex justify-content-around mt-4">
+					<button type="submit" class="btn btn-primary btn-outline-success text-white">
+						{% if EditMode %}
+							Modifier
+						{% else %}
+							Enregistrer
+						{% endif %}
+					</button>
+					<a href="/addfiliere/" class="btn btn-primary btn-outline-danger text-white">Annuler</a>
+				</div>
+				{{ form_end(formFiliere) }}
+			</div>
+			<div class="p-5 w-75">
+				<table id="datatable" class="table table-bordered border border-3 w-100">
+					<thead>
+					<tr>
+						<th class="bg-danger" scope="col">Compagnie</th>
+						<th class="bg-danger" scope="col">Section</th>
+						<th class="bg-danger" scope="col">Filière</th>
+						<th class="bg-danger" scope="col">Action</th>
+					</tr>
+					</thead>
+					<tbody class="table-dark">
+					{% if is_granted('ROLE_SUPERADMIN') or is_granted('ROLE_ADMIN') %}
+						{% for section in sections %}
+							{% for compagnie in compagnies %}
+								{% if section.compagnie.id == compagnie.id %}
+									{% for filiere in filieres %}
+										{% if filiere.section.id == section.id %}
+											<tr>
+												<td>{{ compagnie.name }}</td>
+												<td>{{ section.name }}</td>
+												<td>{{ filiere.name }}</td>
+												<td>
+													<a class="text-decoration-none text-hover-success" href="/addfiliere/{{ filiere.id }}">Modifier</a> /
+													<a class="text-decoration-none text-hover-danger" href="/addfiliere/delete/{{ filiere.id }}" onclick="return confirm('Supprimer ?')">Supprimer</a>
+												</td>
+											</tr>
+										{% endif %}
+									{% endfor %}
+								{% endif %}
+							{% endfor %}
+						{% endfor %}
+					{% endif %}
+					{% if is_granted('ROLE_CHEF') %}
+						{% for section in sections %}
+							{% if app.user.section.id == section.id %}
+								{% for compagnie in compagnies %}
+									{% if section.compagnie.id == compagnie.id %}
+										{% for filiere in filieres %}
+											{% if filiere.section.id == section.id %}
+												<tr>
+													<td>{{ compagnie.name }}</td>
+													<td>{{ section.name }}</td>
+													<td>{{ filiere.name }}</td>
+													<td>
+														<a class="text-decoration-none text-hover-success" href="/addfiliere/{{ filiere.id }}">Modifier</a> /
+														<a class="text-decoration-none text-hover-danger" href="/addfiliere/delete/{{ filiere.id }}" onclick="return confirm('Supprimer ?')">Supprimer</a>
+													</td>
+												</tr>
+											{% endif %}
+										{% endfor %}
+									{% endif %}
+								{% endfor %}
+							{% endif %}
+						{% endfor %}
+					{% endif %}
+					</tbody>
+				</table>
+			</div>
+		</section>
+	{% else %}
+		<div class="my-6">
+			<h1>Vous devez vous connecté</h1>
+			<a class="btn btn-primary" href="{{ path('app_logout') }}">Retour sur la page de connexion</a>
+		</div>
+	{% endif %}
+{% endblock %}
